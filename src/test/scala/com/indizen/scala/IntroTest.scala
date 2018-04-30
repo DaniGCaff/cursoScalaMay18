@@ -1,4 +1,4 @@
-package com.indizen.scala.sesion1
+package com.indizen.scala
 
 /**
   * Created by scouto.
