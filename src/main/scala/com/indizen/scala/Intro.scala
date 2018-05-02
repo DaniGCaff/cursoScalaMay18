@@ -13,9 +13,12 @@ object MyApp extends App {
   }
 
 
-  //Ejemplos orden superior
 
+
+  //Ejemplos orden superior
   def createSum(x: Int): Int => Int = (y: Int) => x + y
+
+
 
 
   //Ejemplos recusividad
@@ -51,7 +54,11 @@ object MyApp extends App {
   }
 
 
-  //Ejercicios fin de sesión
+  //Ejercicios
+
+  def createOp(x: Int, f: Int => Int): Int => Int = (y: Int) => f(x,y)
+
+
   def operate[A, B](x: A, y: A, f: (A, A) => B) = f(x, y)
 
   def max(list: List[Int]): Int = {

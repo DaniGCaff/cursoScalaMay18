@@ -7,9 +7,9 @@ object Secuencias extends App{
 
 
   //Ejercicios
-  def addToList(list: List[Int], elem: Int): List[Int] = list :+ elem
+  def addAtTheEnd(list: List[Int], elem: Int): List[Int] = list :+ elem
 
-  def addToListIfNotExists(list: List[Int], elem: Int): List[Int] = {
+  def addAtTheEndIfNotExists(list: List[Int], elem: Int): List[Int] = {
     if (list.contains(elem)) list :+ elem
     else list
   }
@@ -47,7 +47,7 @@ object Secuencias extends App{
     }
   }
 
-  def duplicates(list: List[Int], k: Int): List[Int] = {
+  def duplicate(list: List[Int], k: Int): List[Int] = {
 //     for {
 //        elem <- list
 //      } yield List.fill(k)(elem)
@@ -85,22 +85,6 @@ object Secuencias extends App{
   }
 
 
-  def removeFirstElement[A](list: List[A], f: A => Boolean): List[A] = {
-
-    @annotation.tailrec
-    def go(acc: List[A], rest: List[A]): List[A] = {
-
-      rest match {
-        case Nil => acc
-        case h::t if f(h) => acc:::t
-        case h::t if !f(h) => go(acc :+ h, t)
-      }
-    }
-
-    go (List(), list)
-  }
-
-  //Ejercicios
   def second(list: List[Int]): Option[Int] = {
     list match {
       case h :: h2 :: t => Some(h2)
@@ -114,6 +98,21 @@ object Secuencias extends App{
       case h :: t if n > 0 => nth(t, n - 1)
       case _ => None
     }
+  }
+
+  def removeFirstElement[A](list: List[A], f: A => Boolean): List[A] = {
+
+    @annotation.tailrec
+    def go(acc: List[A], rest: List[A]): List[A] = {
+
+      rest match {
+        case Nil => acc
+        case h::t if f(h) => acc:::t
+        case h::t if !f(h) => go(acc :+ h, t)
+      }
+    }
+
+    go (List(), list)
   }
 
 
