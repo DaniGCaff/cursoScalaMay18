@@ -85,4 +85,20 @@ object Secuencias extends App{
   }
 
 
+  def removeFirstElement[A](list: List[A], f: A => Boolean): List[A] = {
+
+    @annotation.tailrec
+    def go(acc: List[A], rest: List[A]): List[A] = {
+
+      rest match {
+        case Nil => acc
+        case h::t if f(h) => acc:::t
+        case h::t if !f(h) => go(acc :+ h, t)
+      }
+    }
+
+    go (List(), list)
+  }
+
+
 }
