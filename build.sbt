@@ -1,4 +1,4 @@
-name := "cursoScala"
+name := "cursoScalaMayo2018"
 
 
 version := "1.0"
