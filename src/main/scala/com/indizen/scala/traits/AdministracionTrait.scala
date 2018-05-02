@@ -7,10 +7,11 @@ package com.indizen.scala.traits
 case class AdministracionTrait[As , Al ](relacionAlumnos: Map[As, List[Al]] = Map()) {
 
 
-//  def removeFirstElement(list: List[Al], f: AlumnoTrait => Boolean): List[Al] = ???
+  //  def removeFirstElement(list: List[Al], f: AlumnoTrait => Boolean): List[Al] = ???
 
   /**
     * Debe dar de alta un alumno si no supera el máximo y el alumno no está ya presente
+    *
     * @param alumno
     * @param asignatura
     * @return
@@ -20,6 +21,7 @@ case class AdministracionTrait[As , Al ](relacionAlumnos: Map[As, List[Al]] = Ma
 
   /**
     * Debe dar de baja un alumno o levantar un error si no es posible
+    *
     * @param alumno
     * @param asignatura
     * @return
@@ -27,4 +29,4 @@ case class AdministracionTrait[As , Al ](relacionAlumnos: Map[As, List[Al]] = Ma
   def baja(alumno: Al, asignatura: As): Either[String, AdministracionTrait[As, Al]] = ???
 
 
-
+}
