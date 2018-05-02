@@ -55,8 +55,7 @@ object MyApp extends App {
 
 
   //Ejercicios
-
-  def createOp(x: Int, f: Int => Int): Int => Int = (y: Int) => f(x,y)
+  def createOp(x: Int, f:(Int, Int) => Int): Int => Int = (y: Int) => f(x,y)
 
 
   def operate[A, B](x: A, y: A, f: (A, A) => B) = f(x, y)
