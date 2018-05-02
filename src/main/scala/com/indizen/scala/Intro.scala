@@ -52,13 +52,35 @@ object MyApp extends App {
 
 
   //Ejercicios fin de sesión
-//  def operate[A, B] = ???
+  def operate[A, B](x: A, y: A, f: (A, A) => B) = f(x, y)
 
-  def max(list: List[Int]): Int = ???
+  def max(list: List[Int]): Int = {
 
-  def second(list: List[Int]): Int = ???
+    @annotation.tailrec
+    def go(current: Int, rest: List[Int]): Int = {
+      rest match {
+        case Nil => current
+        case h :: t => if (h > current) go(h, t) else go(current, t)
+      }
+    }
 
-  def nth(list: List[Int], n: Int): Int = ???
+    go(Int.MinValue, list)
+  }
+
+  def second(list: List[Int]): Int = {
+    list match {
+      case h :: h2 :: t => h2
+      case _ => 0
+    }
+  }
+
+  def nth(list: List[Int], n: Int): Int = {
+    list match {
+      case h :: t if n == 0 => h
+      case h :: t if n > 0 => nth(t, n - 1)
+      case _ => 0
+    }
+  }
 
 }
 

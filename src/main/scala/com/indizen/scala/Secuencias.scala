@@ -100,5 +100,21 @@ object Secuencias extends App{
     go (List(), list)
   }
 
+  //Ejercicios
+  def second(list: List[Int]): Option[Int] = {
+    list match {
+      case h :: h2 :: t => Some(h2)
+      case _ => None
+    }
+  }
+
+  def nth(list: List[Int], n: Int): Option[Int] = {
+    list match {
+      case h :: t if n == 0 => Some(h)
+      case h :: t if n > 0 => nth(t, n - 1)
+      case _ => None
+    }
+  }
+
 
 }
