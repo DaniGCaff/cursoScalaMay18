@@ -16,15 +16,15 @@ class SecuenciasTest extends FlatSpec with Matchers with PropertyChecks {
   val genIntList = Gen.containerOf[List, Int](genInteger)
 
 
-  "addToList" should "create a single element list for empty lists" in {
-    addToList(Nil,3) should be (List(3))
+  "addAtTheEnd" should "create a single element list for empty lists" in {
+    addAtTheEnd(Nil,3) should be (List(3))
   }
 
   it should "add an element to the given list" in {
 
     forAll(genIntList, genInteger) { (myList, myInt) =>
 
-      val result = addToList(myList, myInt)
+      val result = addAtTheEnd(myList, myInt)
       myList.length +1 shouldEqual result.length
       result.last shouldEqual myInt
     }
