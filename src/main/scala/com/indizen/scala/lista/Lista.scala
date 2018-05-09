@@ -2,48 +2,53 @@ package com.indizen.scala.lista
 
 import scala.annotation.tailrec
 
+
+
 /**
   * Created by scouto.
   */
-sealed trait Lista[+A]
+sealed trait Lista[+A]{
+  def ::[B >: A] (x: B): Lista[B] =
+    new ::(x, this)
+}
 
-case object Vacio extends Lista[Nothing]
+case object Nil extends Lista[Nothing]
 
-case class Cons[+A](head: A, tail: Lista[A]) extends Lista[A]
+case class ::[+A](head: A, tail: Lista[A]) extends Lista[A]
 
 object Lista {
 
 
   def apply[A](as: A*): Lista[A] =
-    if (as.isEmpty) Vacio
-    else Cons(as.head, apply(as.tail: _*))
+    if (as.isEmpty) Nil
+    else as.head::apply(as.tail: _*)
 
 
   def sum(ints: Lista[Int]): Int = {
     ints match {
-      case Vacio => 0
-      case Cons(h, t) => h + sum(t)
+      case Nil => 0
+      case h::t => h + sum(t)
     }
   }
 
   def product(ints: Lista[Double]): Double = {
     ints match {
-      case Vacio => 1.0
-      case Cons(h, t) => h * product(t)
+      case Nil => 1.0
+      case h::t => h * product(t)
     }
   }
 
   def tail[A](list: Lista[A]): Lista[A] = {
     list match {
-      case Vacio => Vacio
-      case Cons(_, t) => t
+      case Nil => Nil
+      case _::t => t
     }
   }
 
   def setHead[A](list: Lista[A], newHead: A): Lista[A] = {
     list match {
-      case Vacio => Lista(newHead)
-      case Cons(h, t) => Cons(newHead, t)
+      case Nil => Lista(newHead)
+      case h::t => newHead::t
     }
 
   }
@@ -53,9 +58,9 @@ object Lista {
     @tailrec
     def go(rest: Lista[A], x: Int): Lista[A] = {
       (rest, x) match {
-        case (Vacio, _) => Vacio
+        case (Nil, _) => Nil
         case (_, current) if current <= 0 => rest
-        case (Cons(_, t), current) if current > 0 => go(t, x - 1)
+        case (_::t, current) if current > 0 => go(t, x - 1)
       }
     }
 
@@ -68,9 +73,9 @@ object Lista {
     @tailrec
     def go(rest: Lista[A]): Lista[A] = {
       rest match {
-        case Vacio => Vacio
-        case Cons(h, t) if f(h) => go(t)
-        case Cons(h, _) if !f(h) => rest
+        case Nil => Nil
+        case h::t if f(h) => go(t)
+        case h::_ if !f(h) => rest
       }
     }
 
@@ -82,9 +87,9 @@ object Lista {
     @tailrec
     def go(rest: Lista[A]): Lista[A] = {
       rest match {
-        case Vacio => Vacio
-        case Cons(h, t) if f(h) => go(t)
-        case Cons(h, _) if !f(h) => rest
+        case Nil => Nil
+        case h::t if f(h) => go(t)
+        case h::_ if !f(h) => rest
       }
     }
 
@@ -96,8 +101,8 @@ object Lista {
   def foldRight[A, B](as: Lista[A], z: B)(f: (A, B) => B): B = {
 
     as match {
-      case Vacio => z
-      case Cons(h, t) => f(h, foldRight(t, z)(f))
+      case Nil => z
+      case h::t => f(h, foldRight(t, z)(f))
     }
   }
 
@@ -117,8 +122,8 @@ object Lista {
   @tailrec
   def foldLeft[A, B](as: Lista[A], z: B)(f: (B, A) => B): B = {
     as match {
-      case Vacio => z
-      case Cons(h, t) => foldLeft(t, f(z, h))(f)
+      case Nil => z
+      case h::t => foldLeft(t, f(z, h))(f)
     }
   }
 
@@ -135,7 +140,7 @@ object Lista {
   }
 
   def reverse[A](as: Lista[A]): Lista[A] = {
-    foldLeft(as, Lista[A]())((acc, elem) => Cons(elem, acc))
+    foldLeft(as, Lista[A]())((acc, elem) => elem::acc)
   }
 
   def foldRightbyLeft[A, B](as: Lista[A], z: B)(f: (A, B) => B): B = {
@@ -171,11 +176,11 @@ object Lista {
   }
 
   def map[A, B](l: Lista[A])(f: A => B): Lista[B] = {
-    foldRight(l, Vacio: Lista[B])((elem, acc) => Cons(f(elem), acc))
+    foldRight(l, Nil: Lista[B])((elem, acc) => f(elem)::acc)
   }
 
   def filter[A](l: Lista[A])(f: A => Boolean): Lista[A] = {
-    foldRight(l, Vacio: Lista[A])((elem, acc) => if (f(elem)) Cons(elem, acc) else acc)
+    foldRight(l, Nil: Lista[A])((elem, acc) => if (f(elem)) elem::acc else acc)
   }
 
 

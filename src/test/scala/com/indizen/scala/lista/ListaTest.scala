@@ -1,8 +1,8 @@
 package com.indizen.scala.lista
 
+import com.indizen.scala.lista.Lista._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{FlatSpec, Matchers}
-import com.indizen.scala.lista.Lista._
 
 /**
   * Created by scouto.
@@ -13,11 +13,10 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "sum" should "return 0 for empty listas" in {
     sum(Lista()) should be (0)
-    sum(Vacio) should be (0)
+    sum(Nil) should be (0)
   }
 
   it should "return the addition" in {
-//    val l: Lista[Int] = Cons(1,Cons(2,Cons(3, Vacio)))
 
     sum(Lista(1,2)) should be (3)
     sum(Lista(-1,2)) should be (1)
@@ -27,7 +26,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "product" should "return 1.0 for empty listas" in {
     product(Lista()) should be (1.0)
-    product(Vacio) should be (1.0)
+    product(Nil) should be (1.0)
   }
 
   it should "return the proper value" in {
@@ -40,12 +39,12 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "tail" should "be empty for empty lists" in {
     val l = Lista()
-    assert(tail(l) == Vacio)
+    assert(tail(l) == Nil)
   }
 
   it should "be empty for one-element lists" in {
     val l = Lista(1)
-    assert(tail(l) == Vacio)
+    assert(tail(l) == Nil)
   }
 
   it should "be the tail itself for bigger lists" in {
@@ -80,21 +79,21 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "drop" should "be empty for empty lists" in {
     val l = Lista()
-    assert(drop(l, 5) == Vacio)
-    assert(drop(l, 0) == Vacio)
-    assert(drop(l, -5) == Vacio)
+    assert(drop(l, 5) == Nil)
+    assert(drop(l, 0) == Nil)
+    assert(drop(l, -5) == Nil)
   }
 
   it should "be empty for one-element lists" in {
     val l = Lista(1)
-    assert(drop(l, 5) == Vacio)
+    assert(drop(l, 5) == Nil)
   }
 
   it should "be the same list for 0 drops regardless the list itself" in {
     val l = Lista(1)
     val ls = Lista("myName", "mySurname")
     assert(drop(l, 0) == l)
-    assert(drop(Vacio, 0) == Vacio)
+    assert(drop(Nil, 0) == Nil)
     assert(drop(ls, 0) == ls)
   }
 
@@ -102,17 +101,17 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
     val lInt = Lista(1, 2, 5, 7)
     assert(drop(lInt, 3) === Lista(7))
-    assert(drop(lInt, 4) == Vacio)
+    assert(drop(lInt, 4) == Nil)
     assert(drop(lInt, 1) == tail(lInt))
-    assert(drop(lInt, 15) == Vacio)
+    assert(drop(lInt, 15) == Nil)
 
   }
 
   "dropWhileOld" should "be empty for empty lists" in {
     val l: Lista[Int] = Lista()
-    assert(dropWhileOld(l, (x: Int) => x > 5) == Vacio)
-    assert(dropWhileOld(l, (x: Int) => x > 5) == Vacio)
-    assert(dropWhileOld(l, (x: Int) => x > 5) == Vacio)
+    assert(dropWhileOld(l, (x: Int) => x > 5) == Nil)
+    assert(dropWhileOld(l, (x: Int) => x > 5) == Nil)
+    assert(dropWhileOld(l, (x: Int) => x > 5) == Nil)
   }
 
   it should "remove elements as longer as the predicates satisfies" in {
@@ -120,17 +119,17 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
     val lInt = Lista(1, 2, 5, 7)
     assert(dropWhileOld(lInt, (x: Int) => x < 5) == Lista(5, 7))
     assert(dropWhileOld(lInt, (x: Int) => x < 5) == Lista(5, 7))
-    assert(dropWhileOld(lInt, (x: Int) => x < 10) == Vacio)
-    assert(dropWhileOld(lInt, (x: Int) => true) == Vacio)
+    assert(dropWhileOld(lInt, (x: Int) => x < 10) == Nil)
+    assert(dropWhileOld(lInt, (x: Int) => true) == Nil)
     assert(dropWhileOld(lInt, (x: Int) => false) == Lista(1, 2, 5, 7))
 
   }
 
   "dropWhile" should "be empty for empty lists" in {
     val l: Lista[Int] = Lista()
-    assert(dropWhile(l)(x => x > 5) == Vacio)
-    assert(dropWhile(l)(_ > 5) == Vacio)
-    assert(dropWhile(l)(_ > 5) == Vacio)
+    assert(dropWhile(l)(x => x > 5) == Nil)
+    assert(dropWhile(l)(_ > 5) == Nil)
+    assert(dropWhile(l)(_ > 5) == Nil)
   }
 
   it should "remove elements as longer as the predicates satisfies" in {
@@ -138,15 +137,15 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
     val lInt = Lista(1, 2, 5, 7)
     assert(dropWhile(lInt)(_ < 5) == Lista(5, 7))
     assert(dropWhileOld(lInt, (x: Int) => x < 5) == Lista(5, 7))
-    assert(dropWhile(lInt)(_ < 10) == Vacio)
-    assert(dropWhile(lInt)(x => true) == Vacio)
+    assert(dropWhile(lInt)(_ < 10) == Nil)
+    assert(dropWhile(lInt)(x => true) == Nil)
     assert(dropWhile(lInt)(x => false) == Lista(1, 2, 5, 7))
 
   }
 
   "sumFold" should "work the same as sum" in {
     sumFold(Lista()) should be (sum(Lista()))
-    sumFold(Vacio) should be (sum(Vacio))
+    sumFold(Nil) should be (sum(Nil))
     sumFold(Lista(1,2)) should be (sum(Lista(1,2)))
     sumFold(Lista(-1,2)) should be (sum(Lista(-1,2)))
     sumFold(Lista(16)) should be ( sum(Lista(16)))
@@ -156,7 +155,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "productFold" should "work the same as product" in {
     productFold(Lista()) should be (product(Lista()))
-    productFold(Vacio) should be (product(Vacio))
+    productFold(Nil) should be (product(Nil))
     productFold(Lista(1.5,2)) should be (product(Lista(1.5,2)))
     productFold(Lista(-1,2)) should be (product(Lista(-1,2)))
     productFold(Lista(16)) should be (product(Lista(16)))
@@ -175,7 +174,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
   "sumFoldLeft" should "work the same as sum" in {
     sumFoldLeft(Lista()) should be (sum(Lista()))
-    sumFoldLeft(Vacio) should be (sum(Vacio))
+    sumFoldLeft(Nil) should be (sum(Nil))
     sumFoldLeft(Lista(1,2)) should be (sum(Lista(1,2)))
     sumFoldLeft(Lista(-1,2)) should be (sum(Lista(-1,2)))
     sumFoldLeft(Lista(16)) should be ( sum(Lista(16)))
@@ -186,7 +185,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
   "productFoldLeft" should "work the same as product" in {
 
     productFoldLeft(Lista()) should be (product(Lista()))
-    productFoldLeft(Vacio) should be (product(Vacio))
+    productFoldLeft(Nil) should be (product(Nil))
     productFoldLeft(Lista(1.5,2)) should be (product(Lista(1.5,2)))
     productFoldLeft(Lista(-1,2)) should be (product(Lista(-1,2)))
     productFoldLeft(Lista(16)) should be (product(Lista(16)))
@@ -216,7 +215,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
   "productFoldRightLeft" should "work the same as product" in {
 
     productFoldRightLeft(Lista()) should be (product(Lista()))
-    productFoldRightLeft(Vacio) should be (product(Vacio))
+    productFoldRightLeft(Nil) should be (product(Nil))
     productFoldRightLeft(Lista(1.5,2)) should be (product(Lista(1.5,2)))
     productFoldRightLeft(Lista(-1,2)) should be (product(Lista(-1,2)))
     productFoldRightLeft(Lista(16)) should be (product(Lista(16)))
@@ -227,7 +226,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
   "productFoldLeftRight" should "work the same as product" in {
 
     productFoldLeftRight(Lista()) should be (product(Lista()))
-    productFoldLeftRight(Vacio) should be (product(Vacio))
+    productFoldLeftRight(Nil) should be (product(Nil))
     productFoldLeftRight(Lista(1.5,2)) should be (product(Lista(1.5,2)))
     productFoldLeftRight(Lista(-1,2)) should be (product(Lista(-1,2)))
     productFoldLeftRight(Lista(16)) should be (product(Lista(16)))
@@ -237,7 +236,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
   "sumFoldRightLeft" should "work the same as sum" in {
 
     sumFoldRightLeft(Lista()) should be (sum(Lista()))
-    sumFoldRightLeft(Vacio) should be (sum(Vacio))
+    sumFoldRightLeft(Nil) should be (sum(Nil))
     sumFoldRightLeft(Lista(1,2)) should be (sum(Lista(1,2)))
     sumFoldRightLeft(Lista(-1,2)) should be (sum(Lista(-1,2)))
     sumFoldRightLeft(Lista(16)) should be (sum(Lista(16)))
@@ -248,7 +247,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
   "sumFoldLeftRight" should "work the same as sum" in {
 
     sumFoldLeftRight(Lista()) should be (sum(Lista()))
-    sumFoldLeftRight(Vacio) should be (sum(Vacio))
+    sumFoldLeftRight(Nil) should be (sum(Nil))
     sumFoldLeftRight(Lista(1,2)) should be (sum(Lista(1,2)))
     sumFoldLeftRight(Lista(-1,2)) should be (sum(Lista(-1,2)))
     sumFoldLeftRight(Lista(16)) should be (sum(Lista(16)))
