@@ -55,12 +55,27 @@ object MyApp extends App {
 
 
   //Ejercicios
+  def createOp(x: Int, f:(Int, Int) => Int): Int => Int = (y: Int) => f(x,y)
+
+
+  def operate[A, B](x: A, y: A, f: (A, A) => B) = f(x, y)
+
   def max(list: List[Int]): Int = ???
 
-  def second(list: List[Int]): Int = ???
+  def second(list: List[Int]): Int = {
+    list match {
+      case h :: h2 :: t => h2
+      case _ => 0
+    }
+  }
 
-  def nth(list: List[Int], n: Int): Int = ???
-
+  def nth(list: List[Int], n: Int): Int = {
+    list match {
+      case h :: t if n == 1 => h
+      case h :: t if n > 1 => nth(t, n - 1)
+      case _ => 0
+    }
+  }
 }
 
 
