@@ -23,7 +23,7 @@ class SecuenciasTest extends FlatSpec with Matchers with PropertyChecks {
   ignore should "add an element to the given list" in {
 
     forAll(genIntList, genInteger) { (myList, myInt) =>
-
+º
       val result = addAtTheEnd(myList, myInt)
       myList.length +1 shouldEqual result.length
       result.last shouldEqual myInt

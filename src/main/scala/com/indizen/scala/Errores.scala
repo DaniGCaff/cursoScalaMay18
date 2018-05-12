@@ -38,14 +38,34 @@ object Errores extends App{
   }
 
   //Ejerciciso
-  def aplicaInteres(cant: Double, tipo: Option[Double]): Double = ???
+  def aplicaInteres(cant: Double, tipo: Option[Double]): Double = {
+    cant * tipo.getOrElse(1.5)
+  }
 
-  def aplicaInteres2(cant: Option[Double], tipo: Option[Double]): Option[Double] = ???
+  def aplicaInteres2(cant: Option[Double], tipo: Option[Double]): Option[Double] = {
+    (cant, tipo) match {
+      case (Some(c), Some(t)) => Some(c*t)
+      case _ => None
+    }
+  }
 
-  def aplicaInteresEither(cant: Option[Double], tipo: Option[Double]): Either[String, Double] =  ???
+  def aplicaInteresEither(cant: Option[Double], tipo: Option[Double]): Either[String, Double] =  {
+    (cant, tipo) match {
+      case (Some(c), Some(t)) => Right(c * t)
+      case (None, _) => Left("cantidad vacia")
+      case (_, None) => Left("tipo vacio")
+    }
+  }
 
 
-  def aplicaInteresEither(cant: Either[String, Double], tipo: Either[String, Double]): Either[String, Double] =  ???
+  def aplicaInteresEither(cant: Either[String, Double], tipo: Either[String, Double]): Either[String, Double] =  {
+    (cant, tipo) match {
+      case (Left(e1), Left(e2)) => Left(s"errores encontrados: [${e1}, ${e2}]")
+      case (Left(e), _) => Left(e)
+      case (_, Left(e)) => Left(e)
+      case (Right(c), Right(t)) => Right(c * t)
+    }
+  }
 
 
 
