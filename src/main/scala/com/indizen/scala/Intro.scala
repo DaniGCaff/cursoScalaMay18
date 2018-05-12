@@ -60,7 +60,18 @@ object MyApp extends App {
 
   def operate[A, B](x: A, y: A, f: (A, A) => B) = f(x, y)
 
-  def max(list: List[Int]): Int = ???
+  def max(list: List[Int]): Int = {
+
+    @annotation.tailrec
+    def go(current: Int, rest: List[Int]): Int = {
+      rest match {
+        case Nil => current
+        case h :: t => if (h > current) go(h, t) else go(current, t)
+      }
+    }
+
+    go(Int.MinValue, list)
+  }
 
   def second(list: List[Int]): Int = {
     list match {
