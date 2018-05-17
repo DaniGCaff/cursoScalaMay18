@@ -136,7 +136,7 @@ class ListaTest extends FlatSpec with Matchers with PropertyChecks{
 
     val lInt = Lista(1, 2, 5, 7)
     assert(dropWhile(lInt)(_ < 5) == Lista(5, 7))
-    assert(dropWhileOld(lInt, (x: Int) => x < 5) == Lista(5, 7))
+    assert(dropWhile(lInt)( _ < 5) == Lista(5, 7))
     assert(dropWhile(lInt)(_ < 10) == Nil)
     assert(dropWhile(lInt)(x => true) == Nil)
     assert(dropWhile(lInt)(x => false) == Lista(1, 2, 5, 7))

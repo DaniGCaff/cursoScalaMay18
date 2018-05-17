@@ -1,18 +1,12 @@
 package com.indizen.scala.stream
 
-import scala.annotation.tailrec
-import com.github.scouto.sesion10.Stream._
+import com.indizen.scala.stream.Stream._
 /**
   * Created by couto.
   */
 sealed trait Stream[+A] {
 
-  def headOption: Option[A] = {
-    this match {
-      case Empty => None
-      case Cons(h, _) => Some(h())
-    }
-  }
+  def headOption: Option[A] = ???
 
 
   def toList: List[A] = ???
@@ -20,17 +14,23 @@ sealed trait Stream[+A] {
 //  @tailrec
   final def drop(n: Int): Stream[A] = ???
 
+  
 //  @tailrec
   final def dropWhile(f: A => Boolean): Stream[A] = ???
 
+
   def take(n: Int): Stream[A] = ???
 
-  def takeWhile(p: A => Boolean): Stream[A] = ???
+  def takeWhile(p: A => Boolean): Stream[A] = {
+    this match {
+      case Cons(h, t) if p(h()) => cons(h(), t().takeWhile(p))
+      case _ => empty
+    }
+  }
 
   //true si algun elemento cumple
   def exists(f: A => Boolean): Boolean = ???
 
-  //Sesion 11
   def foldRight[B](z: => B)(f: (A, => B) => B): B = ???
 
 //  @tailrec
@@ -62,20 +62,15 @@ sealed trait Stream[+A] {
 
   def takeWhileUnfold(p: A => Boolean): Stream[A] = ???
 
-  def zipWith[B, C](other: Stream[B])(f: (A, B) => C): Stream[C] = ???
-
-  def zipWithAll[B, C](other: Stream[B])(f: (Option[A], Option[B]) => C) : Stream[C] = ???
-
-  def tails: Stream[Stream[A]] = ???
-
-  def zip[B](s2: Stream[B]): Stream[(A, B)] = ???
-
-  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] = ???
-
-  def empiezaPor[A](s: Stream[A]): Boolean = ???
 
 
-  def tieneSubsecuencia[A](s: Stream[A]): Boolean = ???
+
+
+
+
+
+
+
 
 
 
@@ -103,13 +98,11 @@ object Stream {
     else cons(as.head, apply(as.tail: _*))
   }
 
-
   val ones: Stream[Int] = ???
 
   def constant[A](a: A): Stream[A] = ???
 
   def from(n: Int): Stream[Int] = ???
-
 
   //0,1,1, 2,3,5,8,13....
   def fibs: Stream[Int] = ???
