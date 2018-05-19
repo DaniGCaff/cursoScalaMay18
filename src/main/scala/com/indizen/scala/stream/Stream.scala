@@ -1,26 +1,54 @@
 package com.indizen.scala.stream
 
 import com.indizen.scala.stream.Stream._
+
+import scala.annotation.tailrec
 /**
   * Created by couto.
   */
 sealed trait Stream[+A] {
 
-  def headOption: Option[A] = ???
+  def headOption: Option[A] = {
+    this match {
+      case Empty => None
+      case Cons(h, _) => Some(h())
+    }
+  }
 
 
-  def toList: List[A] = ???
+  def toList: List[A] = {
+    this match {
+      case Empty => Nil
+      case Cons(h,t) => h() :: t().toList
+    }
+  }
 
-//  @tailrec
-  final def drop(n: Int): Stream[A] = ???
+  @tailrec
+  final def drop(n: Int): Stream[A] = {
+    this match {
+      case Cons(_, t) if n > 0 => t().drop(n - 1)
+      case _ => this
+    }
+  }
 
   
-//  @tailrec
-  final def dropWhile(f: A => Boolean): Stream[A] = ???
+  @tailrec
+  final def dropWhile(f: A => Boolean): Stream[A] = {
+      this match {
+        case Cons(h, t) if f(h()) => t().dropWhile(f)
+        case _ => this
+      }
+  }
 
 
-  def take(n: Int): Stream[A] = ???
-
+  def take(n: Int): Stream[A] = {
+    this match {
+      //case Cons(h, t) if n > 1 => Cons(() => h(), () => t().take(n - 1))
+      case Cons(h, t) if n > 1 => cons( h(), t().take(n - 1))
+      case Cons(h, _) if n == 1 => Stream(h())
+      case _ => empty
+    }
+  }
   def takeWhile(p: A => Boolean): Stream[A] = {
     this match {
       case Cons(h, t) if p(h()) => cons(h(), t().takeWhile(p))
@@ -29,41 +57,135 @@ sealed trait Stream[+A] {
   }
 
   //true si algun elemento cumple
-  def exists(f: A => Boolean): Boolean = ???
+  def exists(f: A => Boolean): Boolean = {
+    this match {
+      case Cons(h,t) => f(h()) || t().exists(f)
+      case _ => false
+    }
 
-  def foldRight[B](z: => B)(f: (A, => B) => B): B = ???
+  }
 
-//  @tailrec
-  final def foldLeft[B](z: => B)(f: ( => B, A) => B): B = ???
+  def foldRight[B](z: => B)(f: (A, => B) => B): B = {
+    this match {
+      case Cons(h,t) => f(h(), t().foldRight(z)(f))
+      case _ => z
+    }
+  }
 
-  def existsFoldRight(f: A => Boolean): Boolean = ???
+  @tailrec
+  final def foldLeft[B](z: => B)(f: ( => B, A) => B): B = {
+    this match {
+      case Cons(h, t) => t().foldLeft(f(z, h()))(f)
+      case _ => z
 
-  def existsFoldLeft(f: A => Boolean): Boolean = ???
+    }
+  }
 
-  def forAll(p: A => Boolean): Boolean = ???
+  def existsFoldRight(f: A => Boolean): Boolean =  {
+    foldRight(false)((elem, acc) => f(elem) || acc)
+  }
 
-  def headOptionFold: Option[A] = ???
+  def existsFoldLeft(f: A => Boolean): Boolean = {
+    foldLeft(false)((acc, elem) => f(elem) || acc)
+  }
 
-  def takeWhileFold(p: A => Boolean): Stream[A] = ???
+  def forAll(p: A => Boolean): Boolean =  {
+    foldRight(true)((elem, acc) => p(elem) && acc)
+  }
 
-  def map[B](f: A => B): Stream[B] = ???
+  //No vale foldLeft
+  def headOptionFold: Option[A] = {
+    foldRight(None: Option[A])((elem, _) => Some(elem))
+  }
 
-  def filter(p: A => Boolean): Stream[A] = ???
+  def takeWhileFold(p: A => Boolean): Stream[A] = {
+    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else empty)
+  }
 
-  def append[B >: A](other: => Stream[B]): Stream[B] = ???
+  def map[B](f: A => B): Stream[B] = {
+    foldRight(empty[B])((elem, acc) => cons(f(elem), acc))
+  }
 
-  def flatMap[B](f: A => Stream[B]): Stream[B] = ???
+  def filter(p: A => Boolean): Stream[A] = {
+    foldRight(empty[A])((elem, acc) => if (p(elem)) cons(elem, acc) else acc)
+  }
 
-  def find(p: A => Boolean): Option[A] = ???
+  def append[B >: A](other: => Stream[B]): Stream[B] = {
+    foldRight(other)((elem, acc) => cons(elem, acc))
+  }
 
-  def mapUnfold[B](f: A => B): Stream[B] = ???
+  def flatMap[B](f: A => Stream[B]): Stream[B] = {
+    foldRight(empty[B])((elem, acc) => f(elem) append acc)
+  }
 
-  def takeUnfold(n: Int): Stream[A] = ???
+  def find(p: A => Boolean): Option[A] = {
+    filter(p) headOption
+  }
 
-  def takeWhileUnfold(p: A => Boolean): Stream[A] = ???
+  def mapUnfold[B](f: A => B): Stream[B] = {
+    unfold(this) {
+      case Cons(h,t) => Some((f(h()), t()))
+      case _ => None
+    }
+  }
+
+  def takeUnfold(n: Int): Stream[A] = {
+    unfold((this, n)) {
+      case (Cons(h, _), 1)=> Some((h(),(empty, 0)))
+      case (Cons(h, t), x) if x > 1 => Some((h(),(t(), x-1)))
+      case _ => None
+    }
+  }
+
+  def takeWhileUnfold(p: A => Boolean): Stream[A] = {
+    unfold(this){
+      case Cons(h, t) if p(h()) => Some((h(), t()))
+      case _ => None
+    }
+  }
 
 
+  def zipWith[B, C](other: Stream[B])(f: (A, B) => C): Stream[C] = {
+    unfold((this, other)){
+      case (Cons(h1, t1), Cons(h2, t2)) => Some((f(h1(),h2()), (t1(), t2())))
+      case _ => None
+    }
+  }
 
+  def zipWithAll[B, C](other: Stream[B])(f: (Option[A], Option[B]) => C) : Stream[C] = {
+    unfold((this, other))  {
+      case (Cons(h1,t1), Cons(h2,t2)) => Some((f(Some(h1()), Some(h2())), (t1(), t2())))
+      case (Cons(h,t), Empty) => Some((f(Some(h()), None), (t(), empty)))
+      case (Empty, Cons(h,t)) => Some((f(None, Some(h())), (empty, t())))
+      case _ => None
+    }
+  }
+
+  def tails: Stream[Stream[A]] = {
+    unfold(this){
+      case Empty => None
+      case Cons(h,t) => Some((Cons(h,t), t()))
+      //case stream => Some(stream, stream drop 1)
+    } append Empty
+  }
+
+  def zip[B](s2: Stream[B]): Stream[(A, B)] = {
+    zipWith(s2)((_,_))
+  }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] = {
+    zipWithAll(s2)((_,_))
+  }
+
+  def empiezaPor[A](s: Stream[A]): Boolean = {
+    zipAll(s).takeWhile(_._2.isDefined).forAll{case (x, y) => x == y} //foldRight(true)((elem, acc) => elem._1==elem._2 && acc)
+    //    zipAll(s).takeWhile(_._2.isDefined).forAll{x => x._1 == x._2} //foldRight(true)((elem, acc) => elem._1==elem._2 && acc)
+  }
+
+
+  def tieneSubsecuencia[A](s: Stream[A]): Boolean = {
+    tails.exists(_.empiezaPor(s))
+  }
 
 
 
@@ -98,24 +220,46 @@ object Stream {
     else cons(as.head, apply(as.tail: _*))
   }
 
-  val ones: Stream[Int] = ???
+  val ones: Stream[Int] = cons(1, ones)
 
-  def constant[A](a: A): Stream[A] = ???
+  def constant[A](a: A): Stream[A] = cons(a, constant(a))
 
-  def from(n: Int): Stream[Int] = ???
+  def from(n: Int): Stream[Int] = cons(n, from(n+1))
+
 
   //0,1,1, 2,3,5,8,13....
-  def fibs: Stream[Int] = ???
+  def fibs: Stream[Int] = {
+    def loop(acc1: Int, acc2: Int): Stream[Int] = {
+      cons(acc1, loop(acc2, acc1+acc2))
+    }
+    loop(0,1)
+  }
 
-  def unfold[A,S](z: S)(f: S => Option[(A,S)]): Stream[A] = ???
+  def unfold[A,S](z: S)(f: S => Option[(A,S)]): Stream[A] = {
+    f(z) match {
+      case None => empty
+      case Some((value, state))  => cons(value, unfold(state)(f))
+      //      case Some(tupla)  => cons(tupla._1, unfold(tupla._2)(f))
+    }
+  }
 
-  def onesUnfold: Stream[Int] = ???
+  def onesUnfold: Stream[Int] = {
+    unfold(1){_ => Some((1,5))}
+  }
 
-  def constantUnfold[A](a: A): Stream[A] = ???
+  def constantUnfold[A](a: A): Stream[A] = {
+    unfold(a)(_ => Some(a, a))
+  }
 
-  def fromUnfold(n: Int): Stream[Int] = ???
+  def fromUnfold(n: Int): Stream[Int] = {
+    unfold(n)(a => Some(a, a+1))
 
-  def fibsUnfold: Stream[Int] = ???
+  }
+
+  def fibsUnfold: Stream[Int] = {
+    //    unfold((0,1))(t => Some(t._1, (t._2, t._1+ t._2)))
+    unfold((0,1)) {case (a,b) => Some(a, (b, a+b))}
+  }
 
 }
 
